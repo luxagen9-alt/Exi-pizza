@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXI PIZZA - Терминал</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Глитч-эффекты на весь экран */
+        .screen-glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            animation: screen-flicker 8s infinite;
+        }
+
+        @keyframes screen-flicker {
+            0%, 85%, 87%, 89%, 91%, 100% { opacity: 0; }
+            86% { opacity: 0.1; transform: translateX(2px); }
+            88% { opacity: 0.05; transform: translateX(-2px); }
+            90% { opacity: 0.15; transform: translateX(1px); }
+            92% { opacity: 0.02; }
+        }
+
+        /* Глитч-линии */
+        .glitch-line {
+            position: fixed;
+            width: 100%;
+            height: 1px;
+            background: #fff;
+            opacity: 0;
+            animation: glitch-line 12s infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes glitch-line {
+            0%, 90%, 92%, 94%, 96%, 98%, 100% { opacity: 0; top: 0; }
+            91% { opacity: 0.3; top: 30%; }
+            93% { opacity: 0; }
+            95% { opacity: 0.2; top: 70%; }
+            97% { opacity: 0; }
+            99% { opacity: 0.1; top: 40%; }
+        }
+
+        /* Плавающие цифровые частицы */
+        .digital-particle {
+            position: fixed;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            opacity: 0;
+            animation: particle-float 20s infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes particle-float {
+            0%, 100% { opacity: 0; transform: translateY(0) rotate(0deg); }
+            10% { opacity: 0.1; }
+            20% { opacity: 0; transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* Верхний текст без квадрата */
+        .header-text {
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .main-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 
+                0 0 20px #fff,
+                0 0 40px rgba(255, 255, 255, 0.7);
+            position: relative;
+            animation: title-glitch 7s infinite;
+        }
+
+        @keyframes title-glitch {
+            0%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: translateX(0);
+                text-shadow: 
+                    0 0 20px #fff,
+                    0 0 40px rgba(255, 255, 255, 0.7);
+            }
+            89% { 
+                transform: translateX(3px);
+                text-shadow: 
+                    0 0 25px #fff,
+                    0 0 45px rgba(255, 255, 255, 0.8);
+            }
+            91% { 
+                transform: translateX(-3px);
+                text-shadow: 
+                    0 0 15px #fff,
+                    0 0 35px rgba(255, 255, 255, 0.6);
+            }
+            93% { transform: translateX(2px) skew(2deg); }
+            95% { transform: translateX(-2px) skew(-2deg); }
+            97% { transform: translateX(1px); }
+            99% { transform: translateX(-1px); }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #ccc;
+            line-height: 1.5;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: subtitle-glitch 9s infinite;
+        }
+
+        @keyframes subtitle-glitch {
+            0%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: translateX(0);
+                opacity: 1;
+            }
+            87% { transform: translateX(-2px); opacity: 0.8; }
+            89% { transform: translateX(2px); opacity: 0.8; }
+            91% { transform: translateX(-1px); opacity: 0.9; }
+            93% { transform: translateX(1px); opacity: 0.9; }
+            95% { opacity: 0.7; }
+            97% { opacity: 1; }
+            99% { opacity: 0.8; }
+        }
+
+        /* Закруглённый квадрат с контентом */
+        .content-box {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 25px;
+            padding: 40px 35px;
+            box-shadow: 
+                0 0 0 2px rgba(255, 255, 255, 0.15),
+                0 25px 70px rgba(0, 0, 0, 0.8),
+                0 0 150px rgba(255, 255, 255, 0.05) inset;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 50px;
+            position: relative;
+            animation: box-glitch 11s infinite;
+        }
+
+        @keyframes box-glitch {
+            0%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: translateY(0);
+                box-shadow: 
+                    0 0 0 2px rgba(255, 255, 255, 0.15),
+                    0 25px 70px rgba(0, 0, 0, 0.8),
+                    0 0 150px rgba(255, 255, 255, 0.05) inset;
+            }
+            85% { 
+                transform: translateY(-2px);
+                box-shadow: 
+                    0 0 0 2px rgba(255, 255, 255, 0.2),
+                    0 25px 70px rgba(0, 0, 0, 0.9),
+                    0 0 200px rgba(255, 255, 255, 0.1) inset;
+            }
+            87% { transform: translateY(2px); }
+            89% { transform: translateY(-1px); }
+            91% { transform: translateY(1px); }
+            93% { box-shadow: 
+                    0 0 0 3px rgba(255, 255, 255, 0.25),
+                    0 25px 70px rgba(0, 0, 0, 0.85),
+                    0 0 180px rgba(255, 255, 255, 0.08) inset; }
+            95% { box-shadow: 
+                    0 0 0 1px rgba(255, 255, 255, 0.1),
+                    0 25px 70px rgba(0, 0, 0, 0.75),
+                    0 0 120px rgba(255, 255, 255, 0.03) inset; }
+            97% { transform: scale(1.002); }
+            99% { transform: scale(0.998); }
+        }
+
+        /* Квадрат для иконки с глитчем */
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px auto;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: icon-glitch 13s infinite;
+        }
+
+        @keyframes icon-glitch {
+            0%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: scale(1) rotate(0deg);
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+            83% { transform: scale(1.05) rotate(1deg); border-color: #fff; }
+            85% { transform: scale(0.95) rotate(-1deg); border-color: rgba(255, 255, 255, 0.2); }
+            87% { transform: scale(1.03) rotate(2deg); border-color: #fff; }
+            89% { transform: scale(0.97) rotate(-2deg); border-color: rgba(255, 255, 255, 0.4); }
+            91% { transform: scale(1.02) rotate(0.5deg); }
+            93% { transform: scale(0.98) rotate(-0.5deg); }
+            95% { border-color: rgba(255, 255, 255, 0.5); }
+            97% { border-color: rgba(255, 255, 255, 0.1); }
+            99% { border-color: rgba(255, 255, 255, 0.4); }
+        }
+
+        .icon-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .link-icon {
+            font-size: 2.8rem;
+            animation: icon-flicker 1s infinite;
+            filter: drop-shadow(0 0 10px #fff);
+        }
+
+        @keyframes icon-flicker {
+            0%, 8%, 10%, 12%, 14%, 16%, 18%, 20%, 22%, 24%, 26%, 28%, 30%, 32%, 34%, 36%, 38%, 40%, 42%, 44%, 46%, 48%, 50%, 52%, 54%, 56%, 58%, 60%, 62%, 64%, 66%, 68%, 70%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            9%, 11%, 13%, 15%, 17%, 19%, 21%, 23%, 25%, 27%, 29%, 31%, 33%, 35%, 37%, 39%, 41%, 43%, 45%, 47%, 49%, 51%, 53%, 55%, 57%, 59%, 61%, 63%, 65%, 67%, 69%, 71%, 73%, 75%, 77%, 79%, 81%, 83%, 85%, 87%, 89%, 91%, 93%, 95%, 97%, 99% { 
+                opacity: 0.7;
+                transform: scale(0.98);
+            }
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 
+                0 0 15px #fff,
+                0 0 30px rgba(255, 255, 255, 0.7);
+            letter-spacing: 2px;
+            width: 100%;
+            display: block;
+            animation: section-glitch 15s infinite;
+        }
+
+        @keyframes section-glitch {
+            0%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: translateX(0) skew(0deg);
+                opacity: 1;
+            }
+            81% { transform: translateX(3px) skew(3deg); opacity: 0.8; }
+            83% { transform: translateX(-3px) skew(-3deg); opacity: 0.8; }
+            85% { transform: translateX(2px) skew(2deg); opacity: 0.9; }
+            87% { transform: translateX(-2px) skew(-2deg); opacity: 0.9; }
+            89% { opacity: 0.7; }
+            91% { opacity: 1; }
+            93% { letter-spacing: 3px; }
+            95% { letter-spacing: 1px; }
+            97% { text-shadow: 
+                    0 0 20px #fff,
+                    0 0 40px rgba(255, 255, 255, 0.8); }
+            99% { text-shadow: 
+                    0 0 10px #fff,
+                    0 0 20px rgba(255, 255, 255, 0.6); }
+        }
+
+        .description {
+            color: #bbb;
+            line-height: 1.6;
+            font-size: 1.2rem;
+            margin-bottom: 35px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            text-align: center;
+            width: 100%;
+            animation: desc-glitch 17s infinite;
+        }
+
+        @keyframes desc-glitch {
+            0%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+            79% { opacity: 0.7; transform: translateY(-2px); }
+            81% { opacity: 1; transform: translateY(2px); }
+            83% { opacity: 0.8; }
+            85% { opacity: 1; }
+            87% { color: #fff; }
+            89% { color: #bbb; }
+            91% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            93% { text-shadow: 0 0 3px rgba(255, 255, 255, 0.2); }
+            95% { transform: scale(1.01); }
+            97% { transform: scale(0.99); }
+            99% { line-height: 1.8; }
+        }
+
+        /* Терминальный стиль для кнопок с глитчем */
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .terminal-btn {
+            padding: 22px 35px;
+            border: none;
+            border-radius: 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: 
+                0 0 15px rgba(255, 255, 255, 0.3),
+                inset 0 0 15px rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            animation: btn-glitch 19s infinite;
+        }
+
+        @keyframes btn-glitch {
+            0%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: translateX(0);
+                border-color: #fff;
+                box-shadow: 
+                    0 0 15px rgba(255, 255, 255, 0.3),
+                    inset 0 0 15px rgba(255, 255, 255, 0.1);
+            }
+            77% { transform: translateX(-3px); border-color: rgba(255, 255, 255, 0.5); }
+            79% { transform: translateX(3px); border-color: rgba(255, 255, 255, 0.8); }
+            81% { transform: translateX(-2px); }
+            83% { transform: translateX(2px); }
+            85% { box-shadow: 
+                    0 0 20px rgba(255, 255, 255, 0.4),
+                    inset 0 0 20px rgba(255, 255, 255, 0.2); }
+            87% { box-shadow: 
+                    0 0 10px rgba(255, 255, 255, 0.2),
+                    inset 0 0 10px rgba(255, 255, 255, 0.05); }
+            89% { background: rgba(0, 0, 0, 0.8); }
+            91% { background: rgba(0, 0, 0, 0.6); }
+            93% { letter-spacing: 2px; }
+            95% { letter-spacing: 1px; }
+            97% { padding: 23px 36px; }
+            99% { padding: 21px 34px; }
+        }
+
+        .terminal-btn::before {
+            content: '>_ ';
+            color: #00ff00;
+            margin-right: 10px;
+            font-weight: bold;
+            animation: cursor-blink 1s infinite;
+        }
+
+        @keyframes cursor-blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+
+        .terminal-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 0 25px rgba(255, 255, 255, 0.5),
+                inset 0 0 25px rgba(255, 255, 255, 0.2);
+            animation: terminal-hover-glitch 0.5s;
+        }
+
+        @keyframes terminal-hover-glitch {
+            0%, 100% { transform: translateY(-3px) translateX(0); }
+            25% { transform: translateY(-3px) translateX(-3px); }
+            50% { transform: translateY(-3px) translateX(3px); }
+            75% { transform: translateY(-3px) translateX(-2px); }
+        }
+
+        .mirrors-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Терминальный стиль для списка зеркал с глитчем */
+        .terminal-list {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 0;
+            padding: 25px;
+            border: 2px solid #fff;
+            position: relative;
+            overflow: hidden;
+            animation: list-glitch 21s infinite;
+        }
+
+        @keyframes list-glitch {
+            0%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                border-color: #fff;
+                background: rgba(255, 255, 255, 0.03);
+            }
+            75% { border-color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.06); }
+            77% { border-color: rgba(255, 255, 255, 0.8); background: rgba(255, 255, 255, 0.01); }
+            79% { border-color: rgba(255, 255, 255, 0.3); }
+            81% { border-color: rgba(255, 255, 255, 0.7); }
+            83% { transform: translateY(-1px); }
+            85% { transform: translateY(1px); }
+            87% { padding: 26px; }
+            89% { padding: 24px; }
+            91% { box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1); }
+            93% { box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05); }
+            95% { border-width: 3px; }
+            97% { border-width: 1px; }
+            99% { border-width: 2px; }
+        }
+
+        .terminal-list::before {
+            content: '$ ls -la mirrors/';
+            position: absolute;
+            top: -15px;
+            left: 15px;
+            background: #000;
+            padding: 0 10px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 0.9rem;
+            animation: command-glitch 5s infinite;
+        }
+
+        @keyframes command-glitch {
+            0%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                opacity: 1;
+                transform: translateX(0);
+            }
+            89% { opacity: 0.7; transform: translateX(2px); }
+            91% { opacity: 0.9; transform: translateX(-2px); }
+            93% { color: #00cc00; }
+            95% { color: #00ff00; }
+            97% { font-size: 1rem; }
+            99% { font-size: 0.8rem; }
+        }
+
+        .terminal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 0;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            font-family: 'Courier New', monospace;
+            animation: item-glitch 23s infinite;
+        }
+
+        @keyframes item-glitch {
+            0%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: translateX(0);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+            73% { transform: translateX(-2px); border-color: rgba(255, 255, 255, 0.4); }
+            75% { transform: translateX(2px); border-color: rgba(255, 255, 255, 0.1); }
+            77% { transform: translateX(-1px); }
+            79% { transform: translateX(1px); }
+            81% { background: rgba(255, 255, 255, 0.04); }
+            83% { background: rgba(255, 255, 255, 0.01); }
+            85% { padding: 19px; }
+            87% { padding: 17px; }
+            89% { margin-bottom: 13px; }
+            91% { margin-bottom: 11px; }
+            93% { opacity: 0.9; }
+            95% { opacity: 1; }
+            97% { border-width: 2px; }
+            99% { border-width: 1px; }
+        }
+
+        .terminal-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #fff;
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.1);
+            animation: item-hover-glitch 0.5s;
+        }
+
+        @keyframes item-hover-glitch {
+            0%, 100% { transform: translateX(5px) translateY(0); }
+            33% { transform: translateX(5px) translateY(-1px); }
+            66% { transform: translateX(5px) translateY(1px); }
+        }
+
+        .terminal-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .terminal-name {
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            animation: name-glitch 25s infinite;
+        }
+
+        @keyframes name-glitch {
+            0%, 70%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                opacity: 1;
+                transform: translateX(0);
+            }
+            71% { opacity: 0.8; transform: translateX(2px); }
+            73% { opacity: 0.9; transform: translateX(-2px); }
+            75% { color: #ccc; }
+            77% { color: #fff; }
+            79% { font-size: 1.35rem; }
+            81% { font-size: 1.25rem; }
+            83% { text-shadow: 0 0 12px rgba(255, 255, 255, 0.6); }
+            85% { text-shadow: 0 0 4px rgba(255, 255, 255, 0.4); }
+            87% { letter-spacing: 1px; }
+            89% { letter-spacing: 0; }
+            91% { font-weight: 800; }
+            93% { font-weight: 600; }
+            95% { font-weight: 700; }
+            97% { transform: scale(1.02); }
+            99% { transform: scale(0.98); }
+        }
+
+        .terminal-name::before {
+            content: '[+] ';
+            color: #00ff00;
+            font-weight: bold;
+            animation: plus-glitch 3s infinite;
+        }
+
+        @keyframes plus-glitch {
+            0%, 90%, 92%, 94%, 96%, 98%, 100% { opacity: 1; }
+            91% { opacity: 0.5; color: #00cc00; }
+            93% { opacity: 0.8; color: #00ff66; }
+            95% { opacity: 0.6; }
+            97% { content: '[░] '; }
+            99% { content: '[+] '; }
+        }
+
+        .terminal-link {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 0;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            border: 1px solid #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            font-family: 'Courier New', monospace;
+            animation: link-glitch 27s infinite;
+        }
+
+        @keyframes link-glitch {
+            0%, 68%, 70%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: scale(1);
+                border-color: #fff;
+                background: rgba(255, 255, 255, 0.1);
+            }
+            69% { transform: scale(1.05); border-color: rgba(255, 255, 255, 0.7); }
+            71% { transform: scale(0.95); border-color: rgba(255, 255, 255, 0.3); }
+            73% { background: rgba(255, 255, 255, 0.15); }
+            75% { background: rgba(255, 255, 255, 0.05); }
+            77% { padding: 11px 26px; }
+            79% { padding: 9px 24px; }
+            81% { font-size: 1.15rem; }
+            83% { font-size: 1.05rem; }
+            85% { font-weight: 800; }
+            87% { font-weight: 600; }
+            89% { color: #eee; }
+            91% { color: #fff; }
+            93% { text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
+            95% { text-shadow: 0 0 2px rgba(255, 255, 255, 0.2); }
+            97% { opacity: 0.9; }
+            99% { opacity: 1; }
+        }
+
+        .terminal-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: link-hover-flicker 0.5s infinite;
+        }
+
+        @keyframes link-hover-flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Нижний текст без квадрата с глитчем */
+        .footer-text {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 
+                0 0 15px #fff,
+                0 0 30px rgba(255, 255, 255, 0.7);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-top: 20px;
+            animation: footer-glitch 29s infinite;
+        }
+
+        @keyframes footer-glitch {
+            0%, 66%, 68%, 70%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                transform: translateX(0);
+                text-shadow: 
+                    0 0 15px #fff,
+                    0 0 30px rgba(255, 255, 255, 0.7);
+            }
+            67% { 
+                transform: translateX(3px);
+                text-shadow: 
+                    0 0 20px #fff,
+                    0 0 35px rgba(255, 255, 255, 0.8);
+            }
+            69% { 
+                transform: translateX(-3px);
+                text-shadow: 
+                    0 0 10px #fff,
+                    0 0 25px rgba(255, 255, 255, 0.6);
+            }
+            71% { transform: translateX(2px); }
+            73% { transform: translateX(-2px); }
+            75% { letter-spacing: 3px; }
+            77% { letter-spacing: 2px; }
+            79% { font-size: 1.9rem; }
+            81% { font-size: 1.7rem; }
+            83% { opacity: 0.8; }
+            85% { opacity: 1; }
+            87% { color: #f0f0f0; }
+            89% { color: #fff; }
+            91% { font-weight: 800; }
+            93% { font-weight: 700; }
+            95% { text-transform: lowercase; }
+            97% { text-transform: uppercase; }
+            99% { transform: scale(1.02); }
+        }
+
+        /* Терминальная консоль в фоне */
+        .terminal-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 255, 0, 0.01),
+                    rgba(0, 255, 0, 0.01) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+            animation: bg-glitch 31s infinite;
+        }
+
+        @keyframes bg-glitch {
+            0%, 64%, 66%, 68%, 70%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                opacity: 0.3;
+                transform: translateX(0);
+            }
+            65% { opacity: 0.4; transform: translateX(1px); }
+            67% { opacity: 0.2; transform: translateX(-1px); }
+            69% { opacity: 0.35; }
+            71% { background: 
+                    repeating-linear-gradient(
+                        0deg,
+                        rgba(255, 255, 255, 0.02),
+                        rgba(255, 255, 255, 0.02) 1px,
+                        transparent 1px,
+                        transparent 2px
+                    ); }
+            73% { background: 
+                    repeating-linear-gradient(
+                        0deg,
+                        rgba(0, 255, 0, 0.02),
+                        rgba(0, 255, 0, 0.02) 1px,
+                        transparent 1px,
+                        transparent 3px
+                    ); }
+            75% { background-size: 100% 4px; }
+            77% { background-size: 100% 2px; }
+            79% { opacity: 0.25; }
+            81% { opacity: 0.35; }
+            83% { transform: scale(1.01); }
+            85% { transform: scale(0.99); }
+            87% { filter: blur(0.5px); }
+            89% { filter: blur(0); }
+            91% { background-position: 1px 0; }
+            93% { background-position: -1px 0; }
+            95% { background-position: 0 1px; }
+            97% { background-position: 0 -1px; }
+            99% { background-position: 0 0; }
+        }
+
+        /* Эффект мигания курсора */
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 20px;
+            background: #fff;
+            margin-left: 5px;
+            animation: blink 1s infinite, cursor-glitch 33s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes cursor-glitch {
+            0%, 62%, 64%, 66%, 68%, 70%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                opacity: 1;
+                background: #fff;
+            }
+            63% { opacity: 0.5; background: #ccc; }
+            65% { opacity: 0.8; background: #f0f0f0; }
+            67% { height: 22px; }
+            69% { height: 18px; }
+            71% { width: 10px; }
+            73% { width: 6px; }
+            75% { margin-left: 7px; }
+            77% { margin-left: 3px; }
+            79% { vertical-align: top; }
+            81% { vertical-align: bottom; }
+            83% { opacity: 0; }
+            85% { opacity: 1; }
+            87% { animation-duration: 0.8s; }
+            89% { animation-duration: 1.2s; }
+            91% { animation-duration: 1s; }
+            93% { background: #00ff00; }
+            95% { background: #fff; }
+            97% { transform: translateY(2px); }
+            99% { transform: translateY(-2px); }
+        }
+
+        /* Эффект печатания для заголовка с глитчем */
+        .typing-title {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid #fff;
+            animation: typing 3s steps(30, end), blink-caret 0.75s step-end infinite, typing-glitch 35s infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #fff }
+        }
+
+        @keyframes typing-glitch {
+            0%, 60%, 62%, 64%, 66%, 68%, 70%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                border-right-color: #fff;
+                animation-timing-function: steps(30, end);
+            }
+            61% { border-right-color: #ccc; animation-timing-function: steps(25, end); }
+            63% { border-right-color: #f0f0f0; animation-timing-function: steps(35, end); }
+            65% { border-right-width: 4px; }
+            67% { border-right-width: 2px; }
+            69% { white-space: pre; }
+            71% { white-space: nowrap; }
+            73% { overflow: visible; }
+            75% { overflow: hidden; }
+            77% { border-right-style: dashed; }
+            79% { border-right-style: solid; }
+            81% { animation-duration: 2.5s; }
+            83% { animation-duration: 3.5s; }
+            85% { animation-duration: 3s; }
+            87% { border-right-color: transparent; }
+            89% { border-right-color: #fff; }
+            91% { width: 99%; }
+            93% { width: 101%; }
+            95% { width: 100%; }
+            97% { letter-spacing: 3px; }
+            99% { letter-spacing: 2px; }
+        }
+
+        /* Экранный сбой */
+        .screen-distortion {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            animation: distortion 37s infinite;
+        }
+
+        @keyframes distortion {
+            0%, 58%, 60%, 62%, 64%, 66%, 68%, 70%, 72%, 74%, 76%, 78%, 80%, 82%, 84%, 86%, 88%, 90%, 92%, 94%, 96%, 98%, 100% { 
+                opacity: 0;
+                filter: blur(0);
+            }
+            59% { 
+                opacity: 0.1;
+                filter: blur(1px);
+                background: 
+                    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            }
+            61% { opacity: 0.05; filter: blur(0.5px); }
+            63% { opacity: 0.15; filter: blur(1.5px); }
+            65% { opacity: 0; }
+            67% { opacity: 0.07; filter: blur(0.7px); }
+            69% { opacity: 0; }
+            71% { opacity: 0.12; filter: blur(1.2px); }
+            73% { opacity: 0; }
+            75% { opacity: 0.03; filter: blur(0.3px); }
+            77% { opacity: 0; }
+            79% { opacity: 0.09; filter: blur(0.9px); }
+            81% { opacity: 0; }
+            83% { opacity: 0.2; filter: blur(2px); }
+            85% { opacity: 0; }
+            87% { opacity: 0.04; filter: blur(0.4px); }
+            89% { opacity: 0; }
+            91% { opacity: 0.06; filter: blur(0.6px); }
+            93% { opacity: 0; }
+            95% { opacity: 0.08; filter: blur(0.8px); }
+            97% { opacity: 0; }
+            99% { opacity: 0.02; filter: blur(0.2px); }
+        }
+
+        /* Цифровой шум */
+        .digital-noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(0deg, 
+                    rgba(255, 255, 255, 0.03) 0px, 
+                    rgba(255, 255, 255, 0.03) 1px, 
+                    transparent 1px, 
+                    transparent 2px),
+                repeating-linear-gradient(90deg, 
+                    rgba(255, 255, 255, 0.02) 0px, 
+                    rgba(255, 255, 255, 0.02) 1px, 
+                    transparent 1px, 
+                    transparent 2px);
+            pointer-events: none;
+            z-index: -2;
+            opacity: 0.1;
+            animation: noise-flicker 0.1s infinite;
+        }
+
+        @keyframes noise-flicker {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.15; }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 3.5rem;
+                letter-spacing: 2px;
+            }
+            
+            .subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .content-box {
+                padding: 30px 25px;
+            }
+            
+            .icon-container {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .link-icon {
+                font-size: 2.4rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .terminal-btn {
+                padding: 20px 25px;
+                font-size: 1.3rem;
+            }
+            
+            .footer-text {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 30px 15px;
+            }
+            
+            .main-title {
+                font-size: 2.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .content-box {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            
+            .icon-container {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .link-icon {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .terminal-btn {
+                padding: 18px 20px;
+                font-size: 1.2rem;
+            }
+            
+            .terminal-name {
+                font-size: 1.1rem;
+            }
+            
+            .footer-text {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-glitch"></div>
+    <div class="digital-noise"></div>
+    <div class="screen-distortion"></div>
+    <div class="terminal-bg"></div>
+    
+    <!-- Динамически созданные глитч-линии и частицы -->
+    <div id="glitchElements"></div>
+
+    <!-- Верхний текст без квадрата -->
+    <div class="header-text">
+        <h1 class="main-title">EXI PIZZA</h1>
+        <p class="subtitle">Приветствую! Это EXI pizza, лучший сносер в Telegram</p>
+    </div>
+
+    <!-- Закруглённый квадрат с контентом -->
+    <div class="content-box">
+        <!-- Квадрат с иконкой -->
+        <div class="icon-container">
+            <div class="link-icon">🔗</div>
+        </div>
+        
+        <!-- Заголовок по центру -->
+        <h2 class="section-title typing-title">ВЕЧНАЯ ССЫЛКА</h2>
+        
+        <p class="description">
+            Это вечная ссылка на наш канал. Всегда актуальные зеркала и ссылки на ботов в нашем телеграм канале.
+        </p>
+
+        <div class="buttons">
+            <a href="https://t.me/exipizza" target="_blank" class="terminal-btn">
+                ПЕРЕЙТИ В КАНАЛ
+            </a>
+            <button id="toggleMirrors" class="terminal-btn">
+                ПОКАЗАТЬ АКТУАЛЬНЫЕ ЗЕРКАЛА
+            </button>
+        </div>
+
+        <div class="mirrors-section" id="mirrorsSection">
+            <div class="buttons">
+                <button id="hideMirrors" class="terminal-btn">
+                    СКРЫТЬ ЗЕРКАЛА
+                </button>
+            </div>
+
+            <div class="terminal-list">
+                <div class="terminal-item">
+                    <span class="terminal-name">@ETp1z3riasbot</span>
+                    <a href="https://t.me/ETp1z3riasbot" target="_blank" class="terminal-link">connect</a>
+                </div>
+                <div class="terminal-item">
+                    <span class="terminal-name">@ETp1z3riabot</span>
+                    <a href="https://t.me/ETp1z3riabot" target="_blank" class="terminal-link">connect</a>
+                </div>
+                <div class="terminal-item">
+                    <span class="terminal-name">@ETp1szabot</span>
+                    <a href="https://t.me/ETp1szabot" target="_blank" class="terminal-link">connect</a>
+                </div>
+                <div class="terminal-item">
+                    <span class="terminal-name">@ETp1zabot</span>
+                    <a href="https://t.me/ETp1zabot" target="_blank" class="terminal-link">connect</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижний текст без квадрата -->
+    <p class="footer-text">ЛУЧШИЙ СНОСЕР В ТЕЛЕГРАМЕ</p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('toggleMirrors');
+            const hideBtn = document.getElementById('hideMirrors');
+            const mirrorsSection = document.getElementById('mirrorsSection');
+            const glitchElements = document.getElementById('glitchElements');
+            
+            // Создаем глитч-линии
+            for (let i = 0; i < 20; i++) {
+                const line = document.createElement('div');
+                line.className = 'glitch-line';
+                line.style.animationDelay = Math.random() * 12 + 's';
+                line.style.top = Math.random() * 100 + '%';
+                glitchElements.appendChild(line);
+            }
+            
+            // Создаем цифровые частицы
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'digital-particle';
+                particle.textContent = Math.floor(Math.random() * 2);
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.fontSize = (Math.random() * 1 + 0.5) + 'rem';
+                particle.style.opacity = Math.random() * 0.15;
+                glitchElements.appendChild(particle);
+            }
+            
+            toggleBtn.addEventListener('click', function() {
+                mirrorsSection.style.display = 'block';
+                toggleBtn.style.display = 'none';
+                
+                // Интенсивный глитч при открытии
+                document.querySelectorAll('.terminal-btn, .content-box, .terminal-list').forEach(el => {
+                    el.style.animation = 'none';
+                    setTimeout(() => {
+                        el.style.animation = '';
+                    }, 10);
+                });
+                
+                // Экранная вспышка
+                const flash = document.createElement('div');
+                flash.style.position = 'fixed';
+                flash.style.top = '0';
+                flash.style.left = '0';
+                flash.style.width = '100%';
+                flash.style.height = '100%';
+                flash.style.background = '#fff';
+                flash.style.opacity = '0.3';
+                flash.style.zIndex = '9999';
+                flash.style.pointerEvents = 'none';
+                document.body.appendChild(flash);
+                
+                setTimeout(() => {
+                    flash.style.transition = 'opacity 0.3s';
+                    flash.style.opacity = '0';
+                    setTimeout(() => flash.remove(), 300);
+                }, 100);
+            });
+            
+            hideBtn.addEventListener('click', function() {
+                mirrorsSection.style.display = 'none';
+                toggleBtn.style.display = 'block';
+                
+                // Глитч при закрытии
+                document.querySelectorAll('.terminal-btn').forEach(btn => {
+                    btn.style.animation = 'terminal-hover-glitch 0.5s';
+                });
+            });
+
+            // Случайные интенсивные глитчи
+            setInterval(() => {
+                if (Math.random() < 0.4) { // 40% chance
+                    const elements = document.querySelectorAll('.main-title, .section-title, .footer-text, .terminal-btn');
+                    const element = elements[Math.floor(Math.random() * elements.length)];
+                    
+                    if (element) {
+                        const originalAnimation = element.style.animation;
+                        element.style.animation = 'none';
+                        
+                        setTimeout(() => {
+                            element.style.animation = originalAnimation;
+                            element.style.transform = `translateX(${Math.random() * 6 - 3}px) translateY(${Math.random() * 4 - 2}px)`;
+                            element.style.opacity = Math.random() * 0.5 + 0.5;
+                            
+                            setTimeout(() => {
+                                element.style.transform = '';
+                                element.style.opacity = '';
+                            }, 200);
+                        }, 10);
+                    }
+                }
+            }, 1500);
+
+            // Случайное искажение текста
+            setInterval(() => {
+                if (Math.random() < 0.25) { // 25% chance
+                    const titles = document.querySelectorAll('.main-title, .section-title, .footer-text, .terminal-name');
+                    titles.forEach(title => {
+                        const originalText = title.textContent;
+                        
+                        if (Math.random() < 0.3) { // 30% chance для каждого заголовка
+                            // Временно заменяем некоторые символы
+                            const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`';
+                            let newText = '';
+                            
+                            for (let char of originalText) {
+                                if (Math.random() < 0.1 && chars.includes(char) === false) {
+                                    newText += chars[Math.floor(Math.random() * chars.length)];
+                                } else {
+                                    newText += char;
+                                }
+                            }
+                            
+                            const originalOpacity = title.style.opacity;
+                            title.textContent = newText;
+                            title.style.opacity = '0.7';
+                            
+                            setTimeout(() => {
+                                title.textContent = originalText;
+                                title.style.opacity = originalOpacity;
+                            }, 300);
+                        }
+                    });
+                }
+            }, 2500);
+
+            // Случайное смещение элементов
+            setInterval(() => {
+                if (Math.random() < 0.3) { // 30% chance
+                    const elements = document.querySelectorAll('.terminal-item, .terminal-btn');
+                    elements.forEach(el => {
+                        const originalTransform = el.style.transform;
+                        el.style.transform = `translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px) rotate(${Math.random() * 2 - 1}deg)`;
+                        
+                        setTimeout(() => {
+                            el.style.transform = originalTransform;
+                        }, 400);
+                    });
+                }
+            }, 3000);
+
+            // Рандомное изменение цвета границ
+            setInterval(() => {
+                if (Math.random() < 0.2) { // 20% chance
+                    const borders = document.querySelectorAll('.content-box, .terminal-list, .terminal-item, .terminal-btn');
+                    borders.forEach(border => {
+                        const originalBorder = border.style.borderColor;
+                        border.style.borderColor = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.3})`;
+                        
+                        setTimeout(() => {
+                            border.style.borderColor = originalBorder;
+                        }, 500);
+                    });
+                }
+            }, 3500);
+
+            // Эффект "зависания" курсора
+            setInterval(() => {
+                if (Math.random() < 0.1) { // 10% chance
+                    const cursor = document.querySelector('.typing-title');
+                    if (cursor) {
+                        const originalAnimation = cursor.style.animation;
+                        cursor.style.animation = 'none';
+                        cursor.style.borderRightColor = 'transparent';
+                        
+                        setTimeout(() => {
+                            cursor.style.animation = originalAnimation;
+                            setTimeout(() => {
+                                cursor.style.borderRightColor = '#fff';
+                            }, 100);
+                        }, 800);
+                    }
+                }
+            }, 8000);
+
+            // Создание временных глитч-линий
+            function createTempGlitchLine() {
+                if (Math.random() < 0.15) { // 15% chance
+                    const line = document.createElement('div');
+                    line.style.position = 'fixed';
+                    line.style.top = Math.random() * 100 + '%';
+                    line.style.left = '0';
+                    line.style.width = '100%';
+                    line.style.height = '1px';
+                    line.style.background = '#fff';
+                    line.style.opacity = '0.2';
+                    line.style.zIndex = '9998';
+                    line.style.pointerEvents = 'none';
+                    line.style.animation = 'none';
+                    document.body.appendChild(line);
+                    
+                    line.animate([
+                        { opacity: 0 },
+                        { opacity: 0.3 },
+                        { opacity: 0 }
+                    ], {
+                        duration: 300,
+                        easing: 'ease-in-out'
+                    });
+                    
+                    setTimeout(() => line.remove(), 300);
+                }
+            }
+            
+            setInterval(createTempGlitchLine, 1000);
+        });
+    </script>
+</body>
+</html>
